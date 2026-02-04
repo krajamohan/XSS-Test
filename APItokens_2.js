@@ -1,4 +1,4 @@
-fetch("/api/tokens/697a3b225493767b73bb7bd8", {
+fetch("/api/tokens?limit=10", {
   method: "GET",
   credentials: "include"
 })
